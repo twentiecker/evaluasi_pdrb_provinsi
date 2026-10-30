@@ -1,0 +1,63 @@
+name: Build aplikasi Windows
+
+on:
+  workflow_dispatch:        # tombol "Run workflow" di tab Actions
+  push:
+    tags: ['v*']            # contoh: git tag v1.0.0 && git push --tags -> otomatis jadi Release
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm install
+          npm run build
+
+      - name: Install dependency Python
+        run: python -m pip install -r requirements-desktop.txt
+
+      - name: Bungkus jadi .exe
+        run: python -m PyInstaller --noconfirm --clean desktop.spec
+
+      - name: Salin main.ipynb dan buat zip portabel
+        shell: pwsh
+        run: |
+          Copy-Item main.ipynb dist/EvaluasiPDRB/main.ipynb
+          Compress-Archive -Path dist/EvaluasiPDRB -DestinationPath EvaluasiPDRB-windows.zip
+
+      - name: Buat installer (opsional)
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          choco install innosetup -y --no-progress
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: EvaluasiPDRB-windows
+          path: |
+            EvaluasiPDRB-windows.zip
+            Output/EvaluasiPDRB-Setup.exe
+
+      - name: Lampirkan ke GitHub Release (hanya saat tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            EvaluasiPDRB-windows.zip
+            Output/EvaluasiPDRB-Setup.exe

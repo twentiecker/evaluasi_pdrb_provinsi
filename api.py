@@ -4,16 +4,14 @@ Jalankan:  uvicorn api:app --reload      (dokumentasi API: http://127.0.0.1:8000
 """
 from __future__ import annotations
 
-from pathlib import Path
-
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 import service
+from paths import DIST_DIR
 
-DIST_DIR = Path(__file__).resolve().parent / "frontend" / "dist"
 
 app = FastAPI(title="Evaluasi PDRB Provinsi", version="1.0.0")
 

@@ -5,6 +5,10 @@ import { useTheme } from '../composables/useTheme'
 
 const { state, running, canRun, percent, upload, run } = useEvaluation()
 const { theme, toggle } = useTheme()
+const collapsed = defineModel('collapsed', { type: Boolean, default: false })
+const toggleSide = () => { collapsed.value = !collapsed.value }
+// Saat panel diciutkan, klik penanda langkah membuka kembali panel.
+const expand = () => { if (collapsed.value) collapsed.value = false }
 
 const input = ref(null)
 const over = ref(false)
@@ -25,24 +29,32 @@ function onPick(e) {
 </script>
 
 <template>
-  <aside class="side">
-    <div class="brand">
-      <svg viewBox="0 0 32 32" width="34" height="34" aria-hidden="true">
-        <rect x="2" y="2" width="12" height="12" rx="3" fill="#0f8b8d" />
-        <rect x="18" y="2" width="12" height="12" rx="3" fill="#f7dda0" />
-        <rect x="2" y="18" width="12" height="12" rx="3" fill="#f7dda0" opacity=".55" />
-        <rect x="18" y="18" width="12" height="12" rx="3" fill="#d9432b" />
-      </svg>
-      <div>
-        <strong>Evaluasi PDRB</strong>
-        <span>Triwulanan, tingkat provinsi</span>
+  <aside class="side" :class="{ rail: collapsed }">
+    <div class="head">
+      <div class="brand">
+        <svg viewBox="0 0 32 32" width="34" height="34" aria-hidden="true">
+          <rect x="2" y="2" width="12" height="12" rx="3" fill="#0f8b8d" />
+          <rect x="18" y="2" width="12" height="12" rx="3" fill="#f7dda0" />
+          <rect x="2" y="18" width="12" height="12" rx="3" fill="#f7dda0" opacity=".55" />
+          <rect x="18" y="18" width="12" height="12" rx="3" fill="#d9432b" />
+        </svg>
+        <div v-show="!collapsed" class="bt">
+          <strong>Evaluasi PDRB</strong>
+          <span>Triwulanan, tingkat provinsi</span>
+        </div>
       </div>
+      <button
+        class="toggle" :aria-label="collapsed ? 'Buka panel' : 'Ciutkan panel'" :aria-expanded="!collapsed"
+        :title="(collapsed ? 'Buka panel' : 'Ciutkan panel') + ' (Ctrl+B)'" @click="toggleSide"
+      >
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </button>
     </div>
 
     <ol class="steps">
-      <li class="step" :class="{ done: uploadOk }">
+      <li class="step" :class="{ done: uploadOk }" @click="expand">
         <span class="mk"><svg v-if="uploadOk" viewBox="0 0 16 16" width="14" height="14"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg><template v-else>1</template></span>
-        <div class="body">
+        <div v-show="!collapsed" class="body">
           <h2>Unggah file Excel</h2>
           <div
             class="drop" :class="{ over, has: uploadOk }" role="button" tabindex="0"
@@ -62,9 +74,9 @@ function onPick(e) {
         </div>
       </li>
 
-      <li class="step" :class="{ done: uploadOk && !!state.periode && (running || finished), locked: !uploadOk }">
+      <li class="step" :class="{ done: uploadOk && !!state.periode && (running || finished), locked: !uploadOk }" @click="expand">
         <span class="mk"><svg v-if="uploadOk && !!state.periode && (running || finished)" viewBox="0 0 16 16" width="14" height="14"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg><template v-else>2</template></span>
-        <div class="body">
+        <div v-show="!collapsed" class="body">
           <h2>Pilih periode</h2>
           <select v-model="state.periode" class="field dark" :disabled="!uploadOk || running" aria-label="Periode evaluasi">
             <option v-if="!uploadOk" value="">Menunggu file</option>
@@ -73,9 +85,9 @@ function onPick(e) {
         </div>
       </li>
 
-      <li class="step" :class="{ done: finished, locked: !uploadOk }">
-        <span class="mk"><svg v-if="finished" viewBox="0 0 16 16" width="14" height="14"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg><template v-else>3</template></span>
-        <div class="body">
+      <li class="step" :class="{ done: finished, locked: !uploadOk }" @click="expand">
+        <span class="mk"><svg v-if="finished" viewBox="0 0 16 16" width="14" height="14"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg><template v-else>{{ collapsed && running ? percent : 3 }}</template></span>
+        <div v-show="!collapsed" class="body">
           <h2>Jalankan evaluasi</h2>
           <button class="btn go" :disabled="!canRun" @click="run">
             {{ running ? 'Memproses…' : finished ? 'Jalankan ulang' : 'Jalankan evaluasi' }}
@@ -89,8 +101,9 @@ function onPick(e) {
       </li>
     </ol>
 
-    <button class="theme" @click="toggle" :aria-label="theme === 'dark' ? 'Pakai tema terang' : 'Pakai tema gelap'">
-      {{ theme === 'dark' ? 'Tema terang' : 'Tema gelap' }}
+    <button class="theme" :title="theme === 'dark' ? 'Pakai tema terang' : 'Pakai tema gelap'" :aria-label="theme === 'dark' ? 'Pakai tema terang' : 'Pakai tema gelap'" @click="toggle">
+      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6" /><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor" /></svg>
+      <span v-show="!collapsed">{{ theme === 'dark' ? 'Tema terang' : 'Tema gelap' }}</span>
     </button>
   </aside>
 </template>
@@ -98,20 +111,34 @@ function onPick(e) {
 <style scoped>
 .side {
   background: var(--side); color: var(--side-fg); padding: 26px 22px; display: flex; flex-direction: column; gap: 30px;
-  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; overflow-x: hidden;
 }
-.brand { display: flex; gap: 12px; align-items: center; }
+.head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.brand { display: flex; gap: 12px; align-items: center; min-width: 0; }
+.bt { white-space: nowrap; }
+.toggle {
+  flex: none; width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--side-line); background: none;
+  color: var(--side-mut); display: grid; place-items: center; transition: color .15s, border-color .15s, background-color .15s;
+}
+.toggle:hover { color: var(--side-fg); border-color: var(--side-mut); background: rgba(255, 255, 255, .05); }
+.toggle svg { transition: transform .28s ease; }
+.rail .toggle svg { transform: rotate(180deg); }
+.steps { min-width: 276px; }
 .brand strong { display: block; font-family: var(--display); font-size: 18px; letter-spacing: -0.01em; }
 .brand span { font-size: 12.5px; color: var(--side-mut); }
 
 .steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.rail { padding-left: 20px; padding-right: 20px; align-items: center; }
+.rail .head { flex-direction: column; gap: 14px; }
+.rail .steps { min-width: 0; }
+.rail .step { grid-template-columns: 28px; cursor: pointer; }
 .step { display: grid; grid-template-columns: 28px 1fr; gap: 14px; padding-bottom: 26px; position: relative; transition: opacity .25s; }
 .step:last-child { padding-bottom: 0; }
 .step::before { content: ''; position: absolute; left: 13px; top: 30px; bottom: 2px; width: 2px; background: var(--side-line); }
 .step:last-child::before { display: none; }
 .step.locked { opacity: .45; }
 .mk {
-  width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700;
+  flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700;
   background: var(--side-line); color: var(--side-fg); transition: background-color .25s, color .25s;
 }
 .step.done .mk { background: var(--pri); color: var(--on-pri); }
@@ -137,10 +164,18 @@ function onPick(e) {
 .prog small { color: var(--side-mut); font-size: 12px; }
 .note { margin: 10px 0 0; }
 
-.theme { margin-top: auto; background: none; border: 1px solid var(--side-line); color: var(--side-mut); border-radius: 8px; padding: 8px 12px; font-size: 13px; transition: color .15s, border-color .15s; }
+.theme { margin-top: auto; display: inline-flex; align-items: center; gap: 8px; justify-content: center; background: none; border: 1px solid var(--side-line); color: var(--side-mut); border-radius: 8px; padding: 8px 12px; font-size: 13px; white-space: nowrap; transition: color .15s, border-color .15s; }
+.rail .theme { padding: 8px; }
 .theme:hover { color: var(--side-fg); border-color: var(--side-mut); }
 
 @media (max-width: 900px) {
   .side { position: static; height: auto; }
+  .steps { min-width: 0; }
+  .rail { flex-direction: row; flex-wrap: wrap; justify-content: space-between; gap: 14px; }
+  .rail .head { flex-direction: row; }
+  .rail .steps { flex-direction: row; gap: 12px; }
+  .rail .step { padding-bottom: 0; }
+  .rail .step::before { display: none; }
+  .rail .theme { margin-top: 0; }
 }
 </style>

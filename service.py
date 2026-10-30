@@ -19,8 +19,8 @@ import pandas as pd
 
 import engine
 
-APP_DIR = Path(__file__).resolve().parent
-NOTEBOOK_PATH = APP_DIR / "main.ipynb"
+from paths import NOTEBOOK_PATH, WORK_DIR
+
 MAX_UPLOAD_BYTES = 100 * 1024 * 1024
 
 # Nama kolom Excel yang panjang/aneh dipendekkan untuk API (file Excel tidak berubah).
@@ -118,7 +118,7 @@ def _run_job(job: Job, upload: Upload) -> None:
 
     try:
         result = engine.run_evaluation(
-            NOTEBOOK_PATH, upload.path, job.periode, upload.sheets, APP_DIR, on_progress
+            NOTEBOOK_PATH, upload.path, job.periode, upload.sheets, WORK_DIR, on_progress
         )
         df = result.dataframe.rename(columns=API_COLUMNS)
         df["kategori"] = df["evaluasi"].map(kategori_evaluasi)
