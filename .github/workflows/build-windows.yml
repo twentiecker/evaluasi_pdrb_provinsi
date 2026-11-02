@@ -3,6 +3,7 @@ name: Build aplikasi Windows
 on:
   workflow_dispatch:        # tombol "Run workflow" di tab Actions
   push:
+    branches: [desktop]
     tags: ['v*']            # contoh: git tag v1.0.0 && git push --tags -> otomatis jadi Release
 
 permissions:
