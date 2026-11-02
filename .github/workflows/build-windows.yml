@@ -1,10 +1,10 @@
 name: Build aplikasi Windows
 
 on:
-  workflow_dispatch:        # tombol "Run workflow" di tab Actions
+  workflow_dispatch:
   push:
     branches: [Desktop]
-    tags: ['v*']            # contoh: git tag v1.0.0 && git push --tags -> otomatis jadi Release
+    tags: ['v*']
 
 permissions:
   contents: write
@@ -12,6 +12,7 @@ permissions:
 jobs:
   build:
     runs-on: windows-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -41,7 +42,6 @@ jobs:
           Copy-Item main.ipynb dist/EvaluasiPDRB/main.ipynb
           Compress-Archive -Path dist/EvaluasiPDRB -DestinationPath EvaluasiPDRB-windows.zip
 
-      ```yaml
       - name: Buat installer
         shell: pwsh
         run: |
@@ -52,7 +52,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             throw "Build installer gagal."
           }
-```
 
       - uses: actions/upload-artifact@v4
         with:
@@ -61,7 +60,7 @@ jobs:
             EvaluasiPDRB-windows.zip
             Output/EvaluasiPDRB-Setup.exe
 
-      - name: Lampirkan ke GitHub Release (hanya saat tag)
+      - name: Lampirkan ke GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:

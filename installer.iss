@@ -1,4 +1,3 @@
-```ini
 ; Inno Setup: membuat EvaluasiPDRB-Setup.exe dari hasil PyInstaller
 
 #ifndef MyAppVersion
@@ -31,4 +30,3 @@ Name: "{autodesktop}\Evaluasi PDRB"; Filename: "{app}\EvaluasiPDRB.exe"; Tasks: 
 
 [Run]
 Filename: "{app}\EvaluasiPDRB.exe"; Description: "Jalankan Evaluasi PDRB"; Flags: nowait postinstall skipifsilent
-```
