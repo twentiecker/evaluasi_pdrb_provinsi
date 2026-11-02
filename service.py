@@ -19,8 +19,8 @@ import pandas as pd
 
 import engine
 
-APP_DIR = Path(__file__).resolve().parent
-NOTEBOOK_PATH = APP_DIR / "main.ipynb"
+from paths import NOTEBOOK_PATH, WORK_DIR
+
 MAX_UPLOAD_BYTES = 100 * 1024 * 1024
 
 # Nama kolom Excel yang panjang/aneh dipendekkan untuk API (file Excel tidak berubah).
@@ -118,7 +118,7 @@ def _run_job(job: Job, upload: Upload) -> None:
 
     try:
         result = engine.run_evaluation(
-            NOTEBOOK_PATH, upload.path, job.periode, upload.sheets, APP_DIR, on_progress
+            NOTEBOOK_PATH, upload.path, job.periode, upload.sheets, WORK_DIR, on_progress
         )
         df = result.dataframe.rename(columns=API_COLUMNS)
         df["kategori"] = df["evaluasi"].map(kategori_evaluasi)
@@ -176,12 +176,19 @@ def summary(job: Job) -> dict:
         vc = df[col].value_counts().head(n)
         return [{"label": str(k), "count": int(v)} for k, v in vc.items()]
 
+    def alphabetical(col: str) -> list[dict]:
+        """Semua nilai unik, diurutkan berdasarkan abjad (bukan jumlah)."""
+        vc = df[col].value_counts()
+        rows = sorted(vc.items(), key=lambda kv: str(kv[0]).casefold())
+        return [{"label": str(k), "count": int(v)} for k, v in rows]
+
     return {
         "total": int(len(df)),
         "kabkot_unik": int(df["kabkot"].nunique()),
         "jenis_evaluasi": int(df["kategori"].nunique()),
-        "per_kategori": top("kategori", 20),
-        "per_komponen": top("komponen", 15),
+        "komponen_unik": int(df["komponen"].nunique()),
+        "per_kategori": alphabetical("kategori"),
+        "per_komponen": alphabetical("komponen"),
         "per_kabkot": top("kabkot", 15),
         "per_kabkot_all": top("kabkot", 1000),
         "opsi": {
