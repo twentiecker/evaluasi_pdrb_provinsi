@@ -94,7 +94,7 @@ const pickKat = (v) => pick(fKat, v)
       </header>
       <p v-if="saveMsg" class="note ok">{{ saveMsg }}</p>
 
-      <KpiStrip v-if="done" :total="state.summary.total" :provinces="state.summary.kabkot_unik" :rules="state.summary.jenis_evaluasi" />
+      <KpiStrip v-if="done" :total="state.summary.total" :provinces="state.summary.kabkot_unik" :evaluations="state.summary.jenis_evaluasi" :components="state.summary.komponen_unik" />
 
       <section class="mapsec">
         <ProvinceMap
@@ -106,11 +106,11 @@ const pickKat = (v) => pick(fKat, v)
       <template v-if="done">
         <section class="bars">
           <BarList
-            title="Aturan yang paling sering terpicu" hint="Klik untuk melihat baris temuannya."
+            title="Temuan per jenis evaluasi" hint="Urut abjad. Klik untuk melihat baris temuannya."
             :items="state.summary.per_kategori" :active="fKat[0] ?? ''" @pick="pickKat"
           />
           <BarList
-            title="Komponen dengan temuan terbanyak" hint="15 komponen teratas."
+            title="Temuan per komponen" hint="Urut abjad. Klik untuk melihat baris temuannya."
             :items="state.summary.per_komponen" :active="fKom[0] ?? ''" @pick="pickKom"
           />
         </section>
@@ -137,5 +137,5 @@ const pickKat = (v) => pick(fKat, v)
 .actions { display: flex; gap: 10px; flex: none; }
 .top p { margin: 8px 0 0; color: var(--mut); max-width: 62ch; }
 .mapsec { background: var(--surface); border-radius: 16px; padding: 22px 22px 20px; box-shadow: 0 0 0 1px var(--line); overflow-x: auto; }
-.bars { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 40px; }
+.bars { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 40px; align-items: start; }
 </style>

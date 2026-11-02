@@ -25,7 +25,7 @@ uvicorn api:app --reload                         # http://127.0.0.1:8000  (dokum
 ```bash
 cd frontend
 npm install
-npm run dev                                      # http://localhost:5173 (/api diproksikan ke :8000)
+````````npm run dev   ````````                                   # http://localhost:5173 (/api diproksikan ke :8000)
 ```
 
 ## Frontend, mode produksi (satu server)

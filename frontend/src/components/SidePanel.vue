@@ -101,10 +101,16 @@ function onPick(e) {
       </li>
     </ol>
 
-    <button class="theme" :title="theme === 'dark' ? 'Pakai tema terang' : 'Pakai tema gelap'" :aria-label="theme === 'dark' ? 'Pakai tema terang' : 'Pakai tema gelap'" @click="toggle">
-      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6" /><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor" /></svg>
-      <span v-show="!collapsed">{{ theme === 'dark' ? 'Tema terang' : 'Tema gelap' }}</span>
-    </button>
+    <div class="foot">
+      <button class="theme" :title="theme === 'dark' ? 'Pakai tema terang' : 'Pakai tema gelap'" :aria-label="theme === 'dark' ? 'Pakai tema terang' : 'Pakai tema gelap'" @click="toggle">
+        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6" /><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor" /></svg>
+        <span v-show="!collapsed">{{ theme === 'dark' ? 'Tema terang' : 'Tema gelap' }}</span>
+      </button>
+      <button v-show="!collapsed" class="theme" title="Ciutkan panel (Ctrl+B)" @click="toggleSide">
+        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        <span>Tutup panel</span>
+      </button>
+    </div>
   </aside>
 </template>
 
@@ -117,8 +123,8 @@ function onPick(e) {
 .brand { display: flex; gap: 12px; align-items: center; min-width: 0; }
 .bt { white-space: nowrap; }
 .toggle {
-  flex: none; width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--side-line); background: none;
-  color: var(--side-mut); display: grid; place-items: center; transition: color .15s, border-color .15s, background-color .15s;
+  flex: none; width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--side-line); background: rgba(255, 255, 255, .06);
+  color: var(--side-fg); display: grid; place-items: center; transition: color .15s, border-color .15s, background-color .15s;
 }
 .toggle:hover { color: var(--side-fg); border-color: var(--side-mut); background: rgba(255, 255, 255, .05); }
 .toggle svg { transition: transform .28s ease; }
@@ -164,7 +170,9 @@ function onPick(e) {
 .prog small { color: var(--side-mut); font-size: 12px; }
 .note { margin: 10px 0 0; }
 
-.theme { margin-top: auto; display: inline-flex; align-items: center; gap: 8px; justify-content: center; background: none; border: 1px solid var(--side-line); color: var(--side-mut); border-radius: 8px; padding: 8px 12px; font-size: 13px; white-space: nowrap; transition: color .15s, border-color .15s; }
+.foot { margin-top: auto; display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
+.rail .foot { align-items: center; }
+.theme { display: inline-flex; align-items: center; gap: 8px; justify-content: center; background: none; border: 1px solid var(--side-line); color: var(--side-mut); border-radius: 8px; padding: 8px 12px; font-size: 13px; white-space: nowrap; transition: color .15s, border-color .15s; }
 .rail .theme { padding: 8px; }
 .theme:hover { color: var(--side-fg); border-color: var(--side-mut); }
 
@@ -176,6 +184,5 @@ function onPick(e) {
   .rail .steps { flex-direction: row; gap: 12px; }
   .rail .step { padding-bottom: 0; }
   .rail .step::before { display: none; }
-  .rail .theme { margin-top: 0; }
 }
 </style>

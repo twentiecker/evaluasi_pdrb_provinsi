@@ -176,12 +176,19 @@ def summary(job: Job) -> dict:
         vc = df[col].value_counts().head(n)
         return [{"label": str(k), "count": int(v)} for k, v in vc.items()]
 
+    def alphabetical(col: str) -> list[dict]:
+        """Semua nilai unik, diurutkan berdasarkan abjad (bukan jumlah)."""
+        vc = df[col].value_counts()
+        rows = sorted(vc.items(), key=lambda kv: str(kv[0]).casefold())
+        return [{"label": str(k), "count": int(v)} for k, v in rows]
+
     return {
         "total": int(len(df)),
         "kabkot_unik": int(df["kabkot"].nunique()),
         "jenis_evaluasi": int(df["kategori"].nunique()),
-        "per_kategori": top("kategori", 20),
-        "per_komponen": top("komponen", 15),
+        "komponen_unik": int(df["komponen"].nunique()),
+        "per_kategori": alphabetical("kategori"),
+        "per_komponen": alphabetical("komponen"),
         "per_kabkot": top("kabkot", 15),
         "per_kabkot_all": top("kabkot", 1000),
         "opsi": {

@@ -1,10 +1,11 @@
 <script setup>
 import { useCountUp } from '../composables/useCountUp'
 
-const props = defineProps({ total: Number, provinces: Number, rules: Number })
+const props = defineProps({ total: Number, provinces: Number, evaluations: Number, components: Number })
 const total = useCountUp(() => props.total)
 const provinces = useCountUp(() => props.provinces, 700)
-const rules = useCountUp(() => props.rules, 700)
+const evaluations = useCountUp(() => props.evaluations, 700)
+const components = useCountUp(() => props.components, 700)
 const fmt = (n) => n.toLocaleString('id-ID')
 </script>
 
@@ -12,7 +13,8 @@ const fmt = (n) => n.toLocaleString('id-ID')
   <div class="kpis">
     <div class="kpi main"><b>{{ fmt(total) }}</b><span>temuan perlu dicek</span></div>
     <div class="kpi"><b>{{ fmt(provinces) }}</b><span>provinsi terdampak</span></div>
-    <div class="kpi"><b>{{ fmt(rules) }}</b><span>jenis aturan terpicu</span></div>
+    <div class="kpi"><b>{{ fmt(evaluations) }}</b><span>jenis evaluasi</span></div>
+    <div class="kpi"><b>{{ fmt(components) }}</b><span>komponen terdampak</span></div>
   </div>
 </template>
 
