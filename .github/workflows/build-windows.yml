@@ -41,12 +41,18 @@ jobs:
           Copy-Item main.ipynb dist/EvaluasiPDRB/main.ipynb
           Compress-Archive -Path dist/EvaluasiPDRB -DestinationPath EvaluasiPDRB-windows.zip
 
-      - name: Buat installer (opsional)
-        continue-on-error: true
+      ```yaml
+      - name: Buat installer
         shell: pwsh
         run: |
           choco install innosetup -y --no-progress
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
+          $version = "${{ github.ref_name }}".TrimStart("v")
+          Write-Host "Membuat installer versi $version"
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$version" installer.iss
+          if ($LASTEXITCODE -ne 0) {
+            throw "Build installer gagal."
+          }
+```
 
       - uses: actions/upload-artifact@v4
         with:

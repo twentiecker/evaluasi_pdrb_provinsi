@@ -1,7 +1,14 @@
-; Inno Setup: membuat EvaluasiPDRB-Setup.exe dari hasil PyInstaller (dist\EvaluasiPDRB)
+```ini
+; Inno Setup: membuat EvaluasiPDRB-Setup.exe dari hasil PyInstaller
+
+#ifndef MyAppVersion
+  #define MyAppVersion "1.0.0"
+#endif
+
 [Setup]
 AppName=Evaluasi PDRB Provinsi
-AppVersion=1.0.0
+AppVersion={#MyAppVersion}
+AppVerName=Evaluasi PDRB Provinsi {#MyAppVersion}
 DefaultDirName={autopf}\Evaluasi PDRB
 DefaultGroupName=Evaluasi PDRB
 OutputDir=Output
@@ -24,3 +31,4 @@ Name: "{autodesktop}\Evaluasi PDRB"; Filename: "{app}\EvaluasiPDRB.exe"; Tasks: 
 
 [Run]
 Filename: "{app}\EvaluasiPDRB.exe"; Description: "Jalankan Evaluasi PDRB"; Flags: nowait postinstall skipifsilent
+```
